@@ -22,8 +22,8 @@ import psutil
 import os
 from PyQt4 import Qt,QtCore,QtGui
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from PyQt4.QtCore import QString
+from numpy import *
 
 
 try:
@@ -192,28 +192,28 @@ class CpuPlot(Qwt.QwtPlot):
         curve.setColor(Qt.Qt.green)
         curve.attach(self)
         self.curves['System'] = curve
-        self.data['System'] = zeros(HISTORY, Float)
+        self.data['System'] = zeros(HISTORY, float)
 
         curve = CpuCurve('User')
         curve.setColor(Qt.Qt.blue)
         curve.setZ(curve.z() - 1.0)
         curve.attach(self)
         self.curves['User'] = curve
-        self.data['User'] = zeros(HISTORY, Float)
+        self.data['User'] = zeros(HISTORY, float)
 
         curve = CpuCurve('Total')
         curve.setColor(Qt.Qt.black)
         curve.setZ(curve.z() - 2.0)
         curve.attach(self)
         self.curves['Total'] = curve
-        self.data['Total'] = zeros(HISTORY, Float)
+        self.data['Total'] = zeros(HISTORY, float)
 
         curve = CpuCurve('Idle')
         curve.setColor(Qt.Qt.darkCyan)
         curve.setZ(curve.z() - 3.0)
         curve.attach(self)
         self.curves['Idle'] = curve
-        self.data['Idle'] = zeros(HISTORY, Float)
+        self.data['Idle'] = zeros(HISTORY, float)
 
         self.showCurve(self.curves['System'], True)
         self.showCurve(self.curves['User'], True)

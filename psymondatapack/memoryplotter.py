@@ -21,8 +21,8 @@ along with Psymon.  If not, see <http://www.gnu.org/licenses/>.
 import psutil
 from PyQt4 import Qt,QtCore,QtGui
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from PyQt4.QtCore import QString
+from numpy import *
 
 
 try:
@@ -50,8 +50,8 @@ class MemoryStat:
         return result
 
     def __lookup(self):
-        pyhmem = psutil.phymem_usage()
-        virtmem = psutil.virtmem_usage()
+        pyhmem = psutil.virtual_memory()
+        virtmem = psutil.swap_memory()
         return [pyhmem.percent, virtmem.percent]
 
 class TimeScaleDraw(Qwt.QwtScaleDraw):
@@ -146,14 +146,14 @@ class MemoryPlot(Qwt.QwtPlot):
         curve.setColor(Qt.Qt.yellow)
         curve.attach(self)
         self.curves['Memory'] = curve
-        self.data['Memory'] = zeros(HISTORY, Float)
+        self.data['Memory'] = zeros(HISTORY, float)
 
         curve = MemoryCurve('Swap')
         curve.setColor(Qt.Qt.green)
         curve.setZ(curve.z() - 1.0)
         curve.attach(self)
         self.curves['Swap'] = curve
-        self.data['Swap'] = zeros(HISTORY, Float)
+        self.data['Swap'] = zeros(HISTORY, float)
 
         self.showCurve(self.curves['Memory'], True)
         self.showCurve(self.curves['Swap'], True)

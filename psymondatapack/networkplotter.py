@@ -21,8 +21,8 @@ along with Psymon.  If not, see <http://www.gnu.org/licenses/>.
 import psutil
 from PyQt4 import Qt,QtCore,QtGui
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from PyQt4.QtCore import QString
+from numpy import *
 
 
 try:
@@ -170,14 +170,14 @@ class NetworkPlot(Qwt.QwtPlot):
         curve.setColor(Qt.Qt.green)
         curve.attach(self)
         self.curves['Net In'] = curve
-        self.data['Net In'] = zeros(HISTORY, Float)
+        self.data['Net In'] = zeros(HISTORY, float)
 
         curve = NetworkCurve('Net Out')
         curve.setColor(Qt.Qt.blue)
         curve.setZ(curve.z() - 1.0)
         curve.attach(self)
         self.curves['Net Out'] = curve
-        self.data['Net Out'] = zeros(HISTORY, Float)
+        self.data['Net Out'] = zeros(HISTORY, float)
 
         self.showCurve(self.curves['Net In'], True)
         self.showCurve(self.curves['Net Out'], True)
@@ -200,9 +200,9 @@ class NetworkPlot(Qwt.QwtPlot):
 
     def net_data(self):
         if _netif == "None":
-            return psutil.network_io_counters(pernic=False)
+            return psutil.net_io_counters(pernic=False)
         else: 
-            return psutil.network_io_counters(pernic=True)[_netif]
+            return psutil.net_io_counters(pernic=True)[_netif]
 
     
     def timerEvent(self, e):

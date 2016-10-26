@@ -30,7 +30,7 @@ import __builtin__
 
 from PyQt4.QtCore import pyqtSlot, QString, QThread,QTranslator,QLocale
 from PyQt4.QtGui import QMainWindow, QApplication, QTreeWidgetItem
-from psutil.error import NoSuchProcess, AccessDenied
+from psutil import NoSuchProcess, AccessDenied
 
 # Import psymon python modules
 import psymondatapack as data
@@ -275,7 +275,7 @@ class MainWin(QMainWindow):
         proc_list = [p for p in psutil.process_iter()]  
         for proc in proc_list:
             try:
-                proc.name
+                proc.name()
                 selected_item_pid=self.ui.treeWidget.selectedItems()[0].text(1)
             except (AccessDenied, NoSuchProcess,IndexError):
                 pass
@@ -775,8 +775,8 @@ class MainWin(QMainWindow):
         self.ui.treeWidget_5.addTopLevelItem(_item_tree5)
         while True:
             try:
-                _lproc_ids = [_lproc.id for _lproc in lproc.get_threads()]
-                for _thread in lproc.get_threads():
+                _lproc_ids = [_lproc.id for _lproc in lproc.threads()]
+                for _thread in lproc.threads():
                     _thread_id = str(_thread.id)
                     _thread_user_time = _thread.user_time
                     _thread_system_time = _thread.system_time
@@ -805,9 +805,9 @@ class MainWin(QMainWindow):
 
             
             try:
-                for _lproc_net_tcp4 in lproc.get_connections(kind='tcp4'):
-                    _lproc_net_tcp4_l = _lproc_net_tcp4.local_address
-                    _lproc_net_tcp4_r = _lproc_net_tcp4.remote_address
+                for _lproc_net_tcp4 in lproc.connections(kind='tcp4'):
+                    _lproc_net_tcp4_l = _lproc_net_tcp4.laddr
+                    _lproc_net_tcp4_r = _lproc_net_tcp4.raddr
                     _lproc_net_tcp4_s = _lproc_net_tcp4.status
                     try:
                         _old_item = self.ui.treeWidget_4.findItems(str(_lproc_net_tcp4_l),Qt.MatchExactly,1)[0]
@@ -822,9 +822,9 @@ class MainWin(QMainWindow):
                         _old_item.setText(3, str(_lproc_net_tcp4_s))
                 time.sleep(0.1)
             
-                for _lproc_net_udp4 in lproc.get_connections(kind='udp4'):
-                    _lproc_net_udp4_l = _lproc_net_udp4.local_address
-                    _lproc_net_udp4_r = _lproc_net_udp4.remote_address
+                for _lproc_net_udp4 in lproc.connections(kind='udp4'):
+                    _lproc_net_udp4_l = _lproc_net_udp4.laddr
+                    _lproc_net_udp4_r = _lproc_net_udp4.raddr
                     _lproc_net_udp4_s = _lproc_net_udp4.status
                     try:
                         _old_item = self.ui.treeWidget_4.findItems(str(_lproc_net_udp4_l),Qt.MatchExactly,1)[0]
@@ -839,9 +839,9 @@ class MainWin(QMainWindow):
                         _old_item.setText(3, str(_lproc_net_udp4_s))
                 time.sleep(0.1)    
             
-                for _lproc_net_tcp6 in lproc.get_connections(kind='tcp6'):
-                    _lproc_net_tcp6_l = _lproc_net_tcp6.local_address
-                    _lproc_net_tcp6_r = _lproc_net_tcp6.remote_address
+                for _lproc_net_tcp6 in lproc.connections(kind='tcp6'):
+                    _lproc_net_tcp6_l = _lproc_net_tcp6.laddr
+                    _lproc_net_tcp6_r = _lproc_net_tcp6.raddr
                     _lproc_net_tcp6_s = _lproc_net_tcp6.status
                     try:
                         _old_item = self.ui.treeWidget_4.findItems(str(_lproc_net_tcp6_l),Qt.MatchExactly,1)[0]
@@ -856,9 +856,9 @@ class MainWin(QMainWindow):
                         _old_item.setText(3, str(_lproc_net_tcp6_s))
                 time.sleep(0.1)
             
-                for _lproc_net_udp6 in lproc.get_connections(kind='udp6'):
-                    _lproc_net_udp6_l = _lproc_net_udp6.local_address
-                    _lproc_net_udp6_r = _lproc_net_udp6.remote_address
+                for _lproc_net_udp6 in lproc.connections(kind='udp6'):
+                    _lproc_net_udp6_l = _lproc_net_udp6.laddr
+                    _lproc_net_udp6_r = _lproc_net_udp6.raddr
                     _lproc_net_udp6_s = _lproc_net_udp6.status
                     try:
                         _old_item = self.ui.treeWidget_4.findItems(str(_lproc_net_udp6_l),Qt.MatchExactly,1)[0]
@@ -874,7 +874,7 @@ class MainWin(QMainWindow):
                 time.sleep(0.1)
             
                 if self.ui.treeWidget_4.topLevelItemCount() > 0 :
-                    _lproc_net_ls  = [str(_lproc_net.local_address) for _lproc_net in lproc.get_connections()]
+                    _lproc_net_ls  = [str(_lproc_net.laddr) for _lproc_net in lproc.connections()]
                     for _list_item in self.ui.treeWidget_4.findItems("*",
                                         Qt.MatchWildcard|Qt.MatchRecursive,0):
                         if str(_list_item.text(1)) not in _lproc_net_ls:
@@ -886,37 +886,37 @@ class MainWin(QMainWindow):
             time.sleep(0.1)
                 
             try:
-                _parent_name = str(lproc.parent.name)
-                _parent_pid = str(lproc.parent.pid)
+                _parent_name = str(lproc.parent().name())
+                _parent_pid = str(lproc.parent().pid)
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _parent_name = accessdenied
                 _parent_pid = accessdenied
             _parent = _parent_name+","+_parent_pid       
             try:
-                _status = str(lproc.status)
+                _status = str(lproc.status())
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _status = accessdenied
             try:
-                _memory = lproc.get_memory_info()
+                _memory = lproc.memory_info()
                 _rss = round(_memory.rss / 1000000.0,1)
                 _vsz = round(_memory.vms / 1000000.0,1)
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _rss = accessdenied
                 _vsz = accessdenied
             try:
-                _cputime = time.strftime("%M:%S", time.localtime(sum(lproc.get_cpu_times())))                    
+                _cputime = time.strftime("%M:%S", time.localtime(sum(lproc.cpu_times())))
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _cputime = accessdenied
             try:
-                _threads = lproc.get_num_threads()
+                _threads = lproc.num_threads()
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _threads = accessdenied
             try:
-                _read_bytes0 = lproc.get_io_counters()[2]
-                _write_bytes0 = lproc.get_io_counters()[3]
+                _read_bytes0 = lproc.io_counters()[2]
+                _write_bytes0 = lproc.io_counters()[3]
                 time.sleep(1)
-                _read_bytes = lproc.get_io_counters()[2]
-                _write_bytes = lproc.get_io_counters()[3]  
+                _read_bytes = lproc.io_counters()[2]
+                _write_bytes = lproc.io_counters()[3]  
                 _read_bytes_per_sec = round((_read_bytes - _read_bytes0)/1000.0,2)
                 _write_bytes_per_sec = round((_write_bytes - _write_bytes0)/1000.0,2)
             except (AttributeError, AccessDenied, NoSuchProcess):
@@ -925,21 +925,21 @@ class MainWin(QMainWindow):
                 _read_bytes_per_sec = accessdenied
                 _write_bytes_per_sec = accessdenied
             try:
-                _working_dir = lproc.getcwd()
+                _working_dir = lproc.cwd()
             except(AttributeError, AccessDenied, NoSuchProcess):
                 _working_dir = accessdenied
             try:
-                _username = lproc.username
+                _username = lproc.username()
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _username = accessdenied
             try:
-                _command = str(lproc.cmdline)
+                _command = str(" ".join(lproc.cmdline()))
                 if os.name == 'nt' and '\\' in _username:
                     _username = _username.split('\\')[1]
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _command = accessdenied
             try:
-                _start = datetime.datetime.fromtimestamp(lproc.create_time)
+                _start = datetime.datetime.fromtimestamp(lproc.create_time())
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _start = accessdenied
             else:
@@ -948,7 +948,7 @@ class MainWin(QMainWindow):
                 else:
                     _start = _fromUtf8(_start.strftime("%b%d"))
             try:
-                _niceness = lproc.nice
+                _niceness = lproc.nice()
             except (AttributeError, AccessDenied, NoSuchProcess):
                 _niceness = accessdenied
             _connections = self.ui.treeWidget_4.topLevelItemCount()
@@ -962,7 +962,7 @@ class MainWin(QMainWindow):
                 
             try:
                 _pid = lproc.pid
-                lproc.name
+                lproc.name()
             except(NoSuchProcess, AttributeError, AccessDenied):
                 global proc_stop_exists,_proc_stop_exists
                 proc_stop_exists = True
@@ -991,8 +991,8 @@ class MainWin(QMainWindow):
             time.sleep(0.2)
             
             try:
-                _loproc_fds = [_loproc.fd for _loproc in lproc.get_open_files()]
-                for _of in lproc.get_open_files():
+                _loproc_fds = [_loproc.fd for _loproc in lproc.open_files()]
+                for _of in lproc.open_files():
                     _o_fd = str(_of.fd)
                     _o_fp = str(_of.path)
                     try:
@@ -1025,22 +1025,22 @@ class MainWin(QMainWindow):
                             None, QtGui.QApplication.UnicodeUTF8)+str(len(_proc_list))     
             _cpu = QtGui.QApplication.translate("MainWindow","Cpu:", 
                             None, QtGui.QApplication.UnicodeUTF8)+str(psutil.cpu_percent(interval=1, percpu=False))+"%"
-            _mem = psutil.phymem_usage()
-            _vmem = psutil.virtmem_usage()
+            _mem = psutil.virtual_memory()
+            _vmem = psutil.swap_memory()
             _mem_inf=QtGui.QApplication.translate("MainWindow","Mem:", 
                             None, QtGui.QApplication.UnicodeUTF8)+str(_mem.percent)+"%"
             _vmem_inf=QtGui.QApplication.translate("MainWindow","Swap:", 
                             None, QtGui.QApplication.UnicodeUTF8)+str(_vmem.percent)+"%"                
             _uptime = QtGui.QApplication.translate("MainWindow","Up:", 
                             None, QtGui.QApplication.UnicodeUTF8)+_fromUtf8(str(datetime.timedelta(
-                    seconds=int(time.time() - psutil.BOOT_TIME))))
-            _in_a = psutil.network_io_counters(pernic=False).bytes_recv
-            _out_a = psutil.network_io_counters(pernic=False).bytes_sent
+                    seconds=int(time.time() - psutil.boot_time()))))
+            _in_a = psutil.net_io_counters(pernic=False).bytes_recv
+            _out_a = psutil.net_io_counters(pernic=False).bytes_sent
             _read_a = psutil.disk_io_counters(perdisk=False).read_bytes
             _write_a = psutil.disk_io_counters(perdisk=False).write_bytes
             time.sleep(0.95)
-            _in_b = psutil.network_io_counters(pernic=False).bytes_recv
-            _out_b = psutil.network_io_counters(pernic=False).bytes_sent
+            _in_b = psutil.net_io_counters(pernic=False).bytes_recv
+            _out_b = psutil.net_io_counters(pernic=False).bytes_sent
             _read_b = psutil.disk_io_counters(perdisk=False).read_bytes
             _write_b = psutil.disk_io_counters(perdisk=False).write_bytes
             _netdata = QtGui.QApplication.translate("MainWindow","Net:", 
@@ -1078,8 +1078,8 @@ class MainWin(QMainWindow):
         selfprocid =  psutil.Process(os.getpid()).pid
         while True:
             nics = []
-            for nic in psutil.network_io_counters(pernic=True):
-                _net_io_counters = psutil.network_io_counters(pernic=True)
+            for nic in psutil.net_io_counters(pernic=True):
+                _net_io_counters = psutil.net_io_counters(pernic=True)
                 nics = nics + [nic]
                 try:
                     try:
@@ -1117,7 +1117,7 @@ class MainWin(QMainWindow):
             for proc in proc_list:
                 try:
                     _pid = proc.pid
-                    _name = proc.name
+                    _name = proc.name()
                 except (AccessDenied,NoSuchProcess):
                     proc_list = self.clear_old_proc_connection(proc_list,proc)
                 else:
@@ -1126,7 +1126,7 @@ class MainWin(QMainWindow):
                         old_item=self.ui.treeWidget_10.findItems(str_pid,Qt.MatchExactly,1)[0]
                     except (IndexError):
                         try:
-                            _connections = proc.get_connections()                  
+                            _connections = proc.connections()
                         except (AccessDenied,NoSuchProcess):
                             pass
                         else:
@@ -1136,8 +1136,8 @@ class MainWin(QMainWindow):
                             else:
                                 for _connection in _connections:
                                     time.sleep(0.1)
-                                    _local_connection = _connection.local_address
-                                    _remote_connection = _connection.remote_address
+                                    _local_connection = _connection.laddr
+                                    _remote_connection = _connection.raddr
                                     _status_connection = _connection.status
                                     item_tree = QTreeWidgetItem()
                                     item_tree.setText(0,str(_name))
@@ -1148,20 +1148,20 @@ class MainWin(QMainWindow):
                                     self.ui.treeWidget_10.addTopLevelItem(item_tree)
                     else:
                         try:
-                            _connections = proc.get_connections()                  
+                            _connections = proc.connections()
                         except (AccessDenied,NoSuchProcess):
                             pass
                         else:
                             total_connections = total_connections + _connections
                             for _connection in _connections:
                                 try:
-                                    str_con = str(_connection.local_address)
+                                    str_con = str(_connection.laddr)
                                     old_item_con=self.ui.treeWidget_10.findItems(str_con,Qt.MatchExactly,2)[0]
                                 except (IndexError):
                                     old_item_pid = old_item.text(1)
                                     old_item_name = old_item.text(0)
-                                    _local_connection_o = _connection.local_address
-                                    _remote_connection_o = _connection.remote_address
+                                    _local_connection_o = _connection.laddr
+                                    _remote_connection_o = _connection.raddr
                                     _status_connection_o = _connection.status
                                     item_tree = QTreeWidgetItem()
                                     item_tree.setText(0,str(old_item_name))
@@ -1175,7 +1175,7 @@ class MainWin(QMainWindow):
                                     old_item_con.setText(4,str(_status_connection_o))
               
             if self.ui.treeWidget_10.topLevelItemCount() > 0 :
-                _lproc_net_ls  = [str(_lproc_net.local_address) for _lproc_net in total_connections]
+                _lproc_net_ls  = [str(_lproc_net.laddr) for _lproc_net in total_connections]
                 for _list_item in self.ui.treeWidget_10.findItems("*",Qt.MatchWildcard|Qt.MatchRecursive,0):
                     time.sleep(0.1)
                     str_list_item_text2 = str(_list_item.text(2))
@@ -1327,27 +1327,27 @@ class MainWin(QMainWindow):
 
     def realtime_values(self,proc):
         _pid = proc.pid
-        _name = proc.name
+        _name = proc.name()
         try:
-            _status = str(proc.status)
+            _status = str(proc.status())
         except (AttributeError, AccessDenied, NoSuchProcess):
             _status =""
         try:
-            _cpu_percent = round(proc.get_cpu_percent(interval=0.0),0)
+            _cpu_percent = round(proc.cpu_percent(interval=0.0),2)
         except (AttributeError, AccessDenied, NoSuchProcess):
             _cpu_percent = ""
         else:
             if _cpu_percent == 0:
                 _cpu_percent = ""
         try:
-            _memory_percent = round(proc.get_memory_percent(),1)
+            _memory_percent = round(proc.memory_percent(),1)
         except (AttributeError, AccessDenied, NoSuchProcess):
             _memory_percent = ""
         else:
             if _memory_percent == 0:
                 _memory_percent = ""
         try:
-            _memory = proc.get_memory_info()
+            _memory = proc.memory_info()
         except (AttributeError, AccessDenied, NoSuchProcess):
             _memory = 0
             _rss = ""
@@ -1360,21 +1360,21 @@ class MainWin(QMainWindow):
             if _vsz == 0:
                 _vsz = ""
         try:
-            _cputime = time.strftime("%M:%S", time.localtime(sum(proc.get_cpu_times())))                    
+            _cputime = time.strftime("%M:%S", time.localtime(sum(proc.cpu_times())))
         except (AttributeError, AccessDenied, NoSuchProcess):
             _cputime = ""
         try:
-            _threads = proc.get_num_threads()
+            _threads = proc.num_threads()
         except (AttributeError, AccessDenied, NoSuchProcess):
             _threads = ""
         try:
-            _read_bytes = proc.get_io_counters()[2]
-            _write_bytes = proc.get_io_counters()[3]
+            _read_bytes = proc.io_counters()[2]
+            _write_bytes = proc.io_counters()[3]
         except (AttributeError,AccessDenied, NoSuchProcess):
             _read_bytes = ""
             _write_bytes = ""
         try:
-            _working_dir = proc.getcwd()
+            _working_dir = proc.cwd()
         except(AttributeError,AccessDenied, NoSuchProcess):
             _working_dir = QtGui.QApplication.translate("MainWindow","AccessDenied", 
                             None, QtGui.QApplication.UnicodeUTF8)
@@ -1387,29 +1387,29 @@ class MainWin(QMainWindow):
                             None, QtGui.QApplication.UnicodeUTF8)
         
         try:
-            _name = proc.name
+            _name = proc.name()
         except (AttributeError, AccessDenied, NoSuchProcess):
             _name = accesdenied
         try:
-            _username = proc.username
+            _username = proc.username()
         except (AttributeError, AccessDenied, NoSuchProcess):
             _username = ""
         try:
-            _command = proc.cmdline
+            _command = " ".join(proc.cmdline())
         except (AttributeError, AccessDenied, NoSuchProcess):
             _command = ""
         else:
             if os.name == 'nt' and '\\' in _username:
                 _username = _username.split('\\')[1]
         try:
-            _parent_name = proc.parent.name
-            _parent_pid = proc.parent.pid
+            _parent_name = proc.parent().name()
+            _parent_pid = proc.parent().pid
         except (AttributeError, AccessDenied, NoSuchProcess):
             _parent_name = accesdenied
             _parent_pid = "00000"
         
         try:                        
-            _start = datetime.datetime.fromtimestamp(proc.create_time)
+            _start = datetime.datetime.fromtimestamp(proc.create_time())
         except (AttributeError, AccessDenied, NoSuchProcess):
             _start = ""
         else:
@@ -1418,7 +1418,7 @@ class MainWin(QMainWindow):
             else:
                 _start = _fromUtf8(_start.strftime("%b%d"))
         try:
-            _niceness = proc.nice
+            _niceness = proc.nice()
         except (AttributeError, AccessDenied, NoSuchProcess):
             _niceness = ""
         
