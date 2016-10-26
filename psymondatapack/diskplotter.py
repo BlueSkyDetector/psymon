@@ -21,8 +21,8 @@ along with Psymon.  If not, see <http://www.gnu.org/licenses/>.
 import psutil
 from PyQt4 import Qt,QtCore,QtGui
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from PyQt4.QtCore import QString
+from numpy import *
 
 
 try:
@@ -165,14 +165,14 @@ class DiskPlot(Qwt.QwtPlot):
         curve.setColor(Qt.Qt.magenta)
         curve.attach(self)
         self.curves['Write'] = curve
-        self.data['Write'] = zeros(HISTORY, Float)
+        self.data['Write'] = zeros(HISTORY, float)
 
         curve = DiskCurve('Read')
         curve.setColor(Qt.Qt.green)
         curve.setZ(curve.z() - 1.0)
         curve.attach(self)
         self.curves['Read'] = curve
-        self.data['Read'] = zeros(HISTORY, Float)
+        self.data['Read'] = zeros(HISTORY, float)
 
         self.showCurve(self.curves['Write'], True)
         self.showCurve(self.curves['Read'], True)

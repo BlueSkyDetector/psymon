@@ -80,10 +80,10 @@ class Ui_MainWindow(object):
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         
         self.table_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"table.png"))
-        self.table_icon = QtGui.QIcon(self.comboBox)
+        self.table_icon = QtGui.QIcon(self.comboBox.itemIcon(0))
         self.table_icon.addPixmap(self.table_pixmap)
         self.tree_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"tree.png"))
-        self.tree_icon = QtGui.QIcon(self.comboBox)
+        self.tree_icon = QtGui.QIcon(self.comboBox.itemIcon(0))
         self.tree_icon.addPixmap(self.tree_pixmap)
         
         self.comboBox.addItem(_fromUtf8(""))
@@ -96,7 +96,7 @@ class Ui_MainWindow(object):
         
         self.pushButton = QtGui.QPushButton(self.tab_7)
         self.process_stop_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"process_stop.png"))
-        self.process_stop_icon = QtGui.QIcon(self.pushButton)
+        self.process_stop_icon = QtGui.QIcon(self.pushButton.icon())
         self.process_stop_icon.addPixmap(self.process_stop_pixmap)
         self.pushButton.setIcon(self.process_stop_icon)
         self.pushButton.setText(QtGui.QApplication.translate("MainWindow", "End Process", None, QtGui.QApplication.UnicodeUTF8))
@@ -550,7 +550,7 @@ class Ui_MainWindow(object):
         
         self.actionQuit = QtGui.QAction(MainWindow)
         self.quit_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"quit.png"))
-        self.quit_icon = QtGui.QIcon(self.actionQuit)
+        self.quit_icon = QtGui.QIcon(self.actionQuit.icon())
         self.quit_icon.addPixmap(self.quit_pixmap)
         self.actionQuit.setIcon(self.quit_icon)
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
@@ -670,7 +670,7 @@ class Ui_MainWindow(object):
         self.labelplot = QtGui.QLabel()
         self.labelplot.setText(QtGui.QApplication.translate("MainWindow","<b>Cpu History</b>", 
                             None, QtGui.QApplication.UnicodeUTF8)+QtGui.QApplication.translate("MainWindow"," (Cpus: ", 
-                            None, QtGui.QApplication.UnicodeUTF8)+str(psutil.NUM_CPUS)+")")
+                            None, QtGui.QApplication.UnicodeUTF8)+str(psutil.cpu_count())+")")
         self.labelplot_icon = QtGui.QLabel()
         self.labelplot_icon_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"cpu.png"))
         self.labelplot_icon.setPixmap(self.labelplot_icon_pixmap)
@@ -688,9 +688,9 @@ class Ui_MainWindow(object):
         self.labelplot2 = QtGui.QLabel()
         self.labelplot2.setText(QtGui.QApplication.translate("MainWindow","<b>Memory History</b>", 
                             None, QtGui.QApplication.UnicodeUTF8)+QtGui.QApplication.translate("MainWindow"," (Mem: ", 
-                            None, QtGui.QApplication.UnicodeUTF8)+str(round(psutil.phymem_usage().total /1000000000.0,2))+"\
+                            None, QtGui.QApplication.UnicodeUTF8)+str(round(psutil.virtual_memory().total /1000000000.0,2))+"\
                                             GB, "+QtGui.QApplication.translate("MainWindow","Swap: ", 
-                            None, QtGui.QApplication.UnicodeUTF8)+str(round(psutil.virtmem_usage().total /1000000000.0,2))+"GB)")
+                            None, QtGui.QApplication.UnicodeUTF8)+str(round(psutil.swap_memory().total /1000000000.0,2))+"GB)")
         self.label2plot_icon = QtGui.QLabel()
         self.label2plot_icon_pixmap = QtGui.QPixmap(os.path.join(__builtin__.iconspath ,"memory.png"))
         self.label2plot_icon.setPixmap(self.label2plot_icon_pixmap)

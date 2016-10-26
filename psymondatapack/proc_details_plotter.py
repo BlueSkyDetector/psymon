@@ -22,9 +22,9 @@ import os
 import psutil
 from PyQt4 import Qt,QtCore,QtGui
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from PyQt4.QtCore import QString
-from psutil.error import NoSuchProcess, AccessDenied
+from psutil import NoSuchProcess, AccessDenied
+from numpy import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -57,8 +57,8 @@ class DetailStat:
     def __lookup(self):
 
         try:
-            _memory_percent = lproc.get_memory_percent()
-            _cpu_percent = lproc.get_cpu_percent(interval=0.0)
+            _memory_percent = lproc.memory_percent()
+            _cpu_percent = lproc.cpu_percent(interval=0.0)
         except (NameError,AttributeError,AccessDenied,NoSuchProcess):
             _memory_percent = 0
             _cpu_percent = 0            
@@ -197,14 +197,14 @@ class DetailPlot(Qwt.QwtPlot):
         curve.setColor("#23A1FA")
         curve.attach(self)
         self.curves['Memory'] = curve
-        self.data['Memory'] = zeros(HISTORY, Float)
+        self.data['Memory'] = zeros(HISTORY, float)
 
         curve = DetailCurve('Cpu')
         curve.setColor(Qt.Qt.red)
         curve.setZ(curve.z() - 1.0)
         curve.attach(self)
         self.curves['Cpu'] = curve
-        self.data['Cpu'] = zeros(HISTORY, Float)
+        self.data['Cpu'] = zeros(HISTORY, float)
 
         self.showCurve(self.curves['Memory'], True)
         self.showCurve(self.curves['Cpu'], True)
